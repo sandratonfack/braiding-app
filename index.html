@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeNa Hair Braiding</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #c471ed, #f64f59, #ff6ec4);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      backdrop-filter: blur(8px);
+    }
+
+    .logo {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 400;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .head-types {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .head-types label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .price-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .price-buttons button {
+      flex: 1;
+      margin: 0 5px;
+      padding: 10px;
+      background-color: #ffd166;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .price-buttons button.active {
+      background-color: #ef476f;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #ff6a95, #ff9ac9);
+    }
+
+    #customPriceField,
+    #fixedPriceField {
+      display: none;
+    }
+
+    #viewEarningsBtn {
+      background-color: #00c78c;
+      background-image: none;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">LeNa Hair Braiding</div>
+  <h2 id="dateDisplay"></h2>
+  <form id="entryForm">
+
+    <label for="clientName">Client Name</label>
+    <input type="text" id="clientName" required />
+
+    <label for="braidDate">Braiding Date (Optional)</label>
+    <input type="date" id="braidDate" />
+
+    <label for="style">Hairstyle</label>
+    <select id="style" required>
+      <option value="">Select hairstyle</option>
+      <option value="Special Large Knotless">Special Large Knotless</option>
+      <option value="Medium Knotless">Medium Knotless</option>
+      <option value="Small Knotless">Small Knotless</option>
+      <option value="SMedium Knotless">SMedium Knotless</option>
+      <option value="Boho Braid">Boho Braid</option>
+      <option value="Locs">Locs</option>
+      <option value="Detangle and Wash">Detangle and Wash</option>
+      <option value="Box Braids">Box Braids</option>
+      <option value="Tribal braids">Tribal braids</option>
+      <option value="Rasta">Rasta</option>
+    </select>
+
+    <label>Head Type</label>
+    <div class="head-types">
+      <label><input type="radio" name="headType" value="full" checked /> Full</label>
+      <label><input type="radio" name="headType" value="half" /> Half</label>
+      <label><input type="radio" name="headType" value="quarter" /> Quarter</label>
+    </div>
+
+    <label>Choose Price Type</label>
+    <div class="price-buttons">
+      <button type="button" id="btnFixed">Fixed Price</button>
+      <button type="button" id="btnCustom">Custom Price</button>
+    </div>
+
+    <div id="fixedPriceField">
+      <label for="fixedPrice">Select Fixed Price</label>
+      <select id="fixedPrice">
+        <option value="">Select price</option>
+        <option value="160">160</option>
+        <option value="180">180</option>
+        <option value="200">200</option>
+        <option value="220">220</option>
+        <option value="250">250</option>
+        <option value="300">300</option>
+        <option value="360">360</option>
+        <option value="400">400</option>
+      </select>
+    </div>
+
+    <div id="customPriceField">
+      <label for="customPrice">Enter Custom Price</label>
+      <input type="number" id="customPrice" placeholder="$" />
+    </div>
+
+    <label for="tips">Any Tips?</label>
+    <input type="number" id="tips" placeholder="$" min="0" />
+
+    <p style="text-align:center; font-style:italic; font-size:0.95rem; color:#ffe;">Ready to know what you earned? 😃</p>
+
+    <button type="submit">Log Entry</button>
+  </form>
+
+  <button id="viewEarningsBtn" onclick="window.location.href='pricing.html'">💰 View Earnings</button>
+
+  <div id="message" style="text-align:center; margin-top:10px;"></div>
+</div>
+
+<script>
+  document.getElementById('dateDisplay').textContent =
+    new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+  let priceType = "";
+
+  const btnFixed = document.getElementById("btnFixed");
+  const btnCustom = document.getElementById("btnCustom");
+  const fixedPriceField = document.getElementById("fixedPriceField");
+  const customPriceField = document.getElementById("customPriceField");
+
+  btnFixed.addEventListener("click", () => {
+    priceType = "fixed";
+    btnFixed.classList.add("active");
+    btnCustom.classList.remove("active");
+    fixedPriceField.style.display = "block";
+    customPriceField.style.display = "none";
+  });
+
+  btnCustom.addEventListener("click", () => {
+    priceType = "custom";
+    btnCustom.classList.add("active");
+    btnFixed.classList.remove("active");
+    fixedPriceField.style.display = "none";
+    customPriceField.style.display = "block";
+  });
+
+  document.getElementById("entryForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    if (!priceType) {
+      alert("Please choose a price type.");
+      return;
+    }
+
+    const braidDateInput = document.getElementById("braidDate").value;
+    const braidDate = braidDateInput
+      ? new Date(braidDateInput).toLocaleDateString()
+      : new Date().toLocaleDateString();
+
+    const sessionData = {
+      date: braidDate,
+      clientName: document.getElementById("clientName").value,
+      style: document.getElementById("style").value,
+      headType: document.querySelector('input[name="headType"]:checked').value,
+      priceType: priceType,
+      fixedPrice: document.getElementById("fixedPrice").value || null,
+      customPrice: document.getElementById("customPrice").value || null,
+      tips: document.getElementById("tips").value || 0
+    };
+
+    localStorage.setItem("braidSession", JSON.stringify(sessionData));
+    window.location.href = "pricing.html";
+  });
+</script>
+
+</body>
+</html>

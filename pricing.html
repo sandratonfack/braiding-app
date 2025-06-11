@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LeNa Hair Braiding - Pricing Summary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #c471ed, #f64f59, #ff6ec4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 95%;
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+    .logo {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 12px;
+      background: linear-gradient(to right, #ff758c, #ff7eb3);
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: linear-gradient(to right, #ff6a95, #ff9ac9);
+    }
+    .summary {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .hidden {
+      display: none;
+    }
+    .client-box {
+      margin-bottom: 15px;
+      background-color: rgba(0, 0, 0, 0.15);
+      padding: 10px;
+      border-radius: 10px;
+      position: relative;
+    }
+    .client-box button {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background-color: #ff4444;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 5px;
+      width: auto;
+    }
+    table {
+      width: 100%;
+      color: white;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid white;
+      text-align: center;
+    }
+    #clearAll {
+      background-color: #ff3333;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">LeNa Hair Braiding</div>
+    <h2>Step 2: Final Touch ✨</h2>
+    <p>Did you braid another client today?</p>
+    <button id="yesBtn">Yes</button>
+    <button id="noBtn">No</button>
+
+    <div id="nextStep" class="hidden">
+      <p>Great! Let's log the next client 🧳️</p>
+      <button onclick="goToFirstPage()">Go to First Page</button>
+    </div>
+
+    <div id="summary" class="hidden summary">
+      <h3>Braider Summary 🧽️</h3>
+      <div id="summaryList"></div>
+      <div style="margin-top: 10px;">
+        <button id="viewTableBtn">📊 View as Table</button>
+        <button id="backToCardsBtn" class="hidden">🔙 Back to Cards</button>
+      </div>
+
+      <div id="tableView" class="hidden" style="overflow-x:auto; margin-top: 15px;">
+        <table id="earningsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Style</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Tips</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <hr />
+      <h3>Total Earned: $<span id="totalEarned"></span></h3>
+      <button id="clearAll">🗑️ Clear All History</button>
+    </div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const nextStep = document.getElementById("nextStep");
+    const summary = document.getElementById("summary");
+    const summaryList = document.getElementById("summaryList");
+    const totalEarned = document.getElementById("totalEarned");
+    const clearAllBtn = document.getElementById("clearAll");
+
+    const viewTableBtn = document.getElementById("viewTableBtn");
+    const backToCardsBtn = document.getElementById("backToCardsBtn");
+    const tableView = document.getElementById("tableView");
+    const earningsTable = document.getElementById("earningsTable").querySelector("tbody");
+
+    const basePayments = {
+      160: 50,
+      180: 60,
+      200: 70,
+      220: 75,
+      250: 85,
+      300: 100,
+      360: 120,
+      400: 135
+    };
+
+    function findClosestFixedPrice(customPrice) {
+      const fixedPrices = Object.keys(basePayments).map(Number);
+      return fixedPrices.reduce((prev, curr) => Math.abs(curr - customPrice) < Math.abs(prev - customPrice) ? curr : prev);
+    }
+
+    function calculateClientTotal(s) {
+      let price = 0;
+      if (s.priceType === "fixed") {
+        const basePay = basePayments[s.fixedPrice];
+        if (basePay) {
+          if (s.headType === "full") price = basePay * 2;
+          else if (s.headType === "half") price = basePay;
+          else if (s.headType === "quarter") price = basePay / 2;
+        }
+      } else if (s.priceType === "custom") {
+        const customPrice = parseFloat(s.customPrice);
+        const closestFixed = findClosestFixedPrice(customPrice);
+        const basePay = basePayments[closestFixed];
+        const adjustedBasePay = basePay + (customPrice - closestFixed) / 2;
+
+        if (s.headType === "full") price = adjustedBasePay * 2;
+        else if (s.headType === "half") price = adjustedBasePay;
+        else if (s.headType === "quarter") price = adjustedBasePay / 2;
+      }
+      return price + parseFloat(s.tips || 0);
+    }
+
+    let sessions = JSON.parse(localStorage.getItem("braidSessions") || "[]");
+    const session = JSON.parse(localStorage.getItem("braidSession"));
+    if (session) {
+      if (!session.date) {
+        session.date = new Date().toLocaleDateString();
+      }
+      sessions.push(session);
+      localStorage.setItem("braidSessions", JSON.stringify(sessions));
+      localStorage.removeItem("braidSession");
+    }
+
+    yesBtn.addEventListener("click", () => {
+      localStorage.setItem("currentClientCount", sessions.length + 1);
+      nextStep.classList.remove("hidden");
+      summary.classList.add("hidden");
+    });
+
+    noBtn.addEventListener("click", () => {
+      nextStep.classList.add("hidden");
+      summary.classList.remove("hidden");
+      renderSummary();
+    });
+
+    function renderSummary() {
+      summaryList.innerHTML = "";
+      let total = 0;
+
+      sessions.forEach((s, index) => {
+        const clientTotal = calculateClientTotal(s);
+        total += clientTotal;
+
+        const div = document.createElement("div");
+        div.className = "client-box";
+        div.innerHTML = `
+          <strong>Client ${index + 1}:</strong><br/>
+          Name: ${s.clientName}<br/>
+          Date: ${s.date || new Date().toLocaleDateString()}<br/>
+          Style: ${s.style}<br/>
+          Type: ${s.headType}<br/>
+          ${s.priceType === "fixed" ? `Fixed Price: $${s.fixedPrice}` : `Custom Price: $${s.customPrice}`}<br/>
+          Tips: $${s.tips || 0}<br/>
+          💰 <strong>Total: $${clientTotal.toFixed(2)}</strong>
+          <button onclick="deleteClient(${index})">Delete</button>
+        `;
+        summaryList.appendChild(div);
+      });
+
+      totalEarned.textContent = total.toFixed(2);
+    }
+
+    function renderTable() {
+      earningsTable.innerHTML = "";
+      sessions.forEach((s, i) => {
+        const row = document.createElement("tr");
+        const total = calculateClientTotal(s).toFixed(2);
+        row.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${s.clientName}</td>
+          <td>${s.date || new Date().toLocaleDateString()}</td>
+          <td>${s.style}</td>
+          <td>${s.headType}</td>
+          <td>${s.priceType === 'fixed' ? `$${s.fixedPrice}` : `$${s.customPrice}`}</td>
+          <td>$${s.tips || 0}</td>
+          <td>$${total}</td>
+        `;
+        earningsTable.appendChild(row);
+      });
+    }
+
+    viewTableBtn.addEventListener("click", () => {
+      summaryList.style.display = "none";
+      tableView.classList.remove("hidden");
+      backToCardsBtn.classList.remove("hidden");
+      viewTableBtn.classList.add("hidden");
+      renderTable();
+    });
+
+    backToCardsBtn.addEventListener("click", () => {
+      summaryList.style.display = "block";
+      tableView.classList.add("hidden");
+      backToCardsBtn.classList.add("hidden");
+      viewTableBtn.classList.remove("hidden");
+    });
+
+    function deleteClient(index) {
+      if (confirm("Delete this client entry?")) {
+        sessions.splice(index, 1);
+        localStorage.setItem("braidSessions", JSON.stringify(sessions));
+        renderSummary();
+      }
+    }
+
+    clearAllBtn.addEventListener("click", () => {
+      if (confirm("Clear all saved client sessions?")) {
+        sessions = [];
+        localStorage.removeItem("braidSessions");
+        renderSummary();
+      }
+    });
+
+    function goToFirstPage() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
